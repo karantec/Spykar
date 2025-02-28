@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const GallerySchema = new mongoose.Schema({
     name: { type: String, required: true },
     content: { type: String, required: true },
-    galleryimage: { type: String }, // Field to store the image URL or path
+    galleryImages: [{ type: String }],
+ // Field to store the image URL or path
     updatedAt: { type: Date, default: Date.now }
 });
 
