@@ -38,7 +38,8 @@ const getallBlogs = async (req, res) => {
     if (!blogs.length) {
       return res.status(404).json({ message: "No blog posts found" });
     }
-    res.status(200).json(blog);
+    
+    res.status(200).json(blogs); // Corrected from "blog" to "blogs"
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({
@@ -46,18 +47,19 @@ const getallBlogs = async (req, res) => {
     });
   }
 };
+
 
 //getting a single blog
 const getBlogById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const blog = await Blog.findById(id);
+    const blog = await Blog.findById(id); // Changed "blogs" to "blog"
 
     if (!blog) {
       return res.status(404).json({ message: "Blog not found" });
     }
-    res.status(200).json(blog);
+    res.status(200).json(blog); // Now correctly returning "blog"
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({
@@ -65,6 +67,7 @@ const getBlogById = async (req, res) => {
     });
   }
 };
+
 
 // update all blogs
 const updateBlog = async (req, res) => {
@@ -111,12 +114,24 @@ const updateBlog = async (req, res) => {
 const deleteBlog = async (req, res) => {
   try {
     const { id } = req.params;
-    const deletedBlog = await Blog.findByIdAndDelete(id);
-    if (!deletedBlog) {
+ 
+
+    // Validate if ID is a valid MongoDB ObjectId
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: "Invalid blog ID format" });
+    }
+
+    // Check if the blog exists before deletion
+    const existingBlog = await Blog.findById(id);
+    if (!existingBlog) {
       return res.status(404).json({ message: "Blog not found" });
     }
+
+    // Delete the blog
+    const deletedBlog = await Blog.findByIdAndDelete(id);
+
     res.status(200).json({
-      message: "Blog is successfully deleted",
+      message: "Blog successfully deleted",
       deletedBlog,
     });
   } catch (error) {
@@ -126,6 +141,7 @@ const deleteBlog = async (req, res) => {
     });
   }
 };
+
 
 
 module.exports={
