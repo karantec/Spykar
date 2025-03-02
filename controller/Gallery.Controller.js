@@ -47,7 +47,7 @@ const deleteGallery = async (req, res) => {
   
       res.status(200).json({
         message: "Gallery deleted successfully",
-        data: Gallerys
+      data: Gallerys
       });
     } catch (error) {
       console.error("Error:", error);

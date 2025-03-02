@@ -3,7 +3,8 @@ const createError = require('http-errors');
 const UserRoutes=require('./routes/User.route');
 const BlogRoutes=require('./routes/Blog.route')
 const TestimonialRoutes=require('./routes/Testimonial.route');
-const GalleryRoutes=require('./routes/Gallery.route')
+const GalleryRoutes=require('./routes/Gallery.route');
+const CrouselRoutes=require('./routes/Crousel.route');
 const morgan = require('morgan');
 const connectDB = require('./config/db');
 require('dotenv').config();
@@ -22,7 +23,7 @@ app.use('/auth', UserRoutes);
 app.use('/blog',  BlogRoutes)
 app.use('/testimonial', TestimonialRoutes );
 app.use('/gallery',GalleryRoutes)
-
+app.use('/crousel', CrouselRoutes)
 app.use('/api', require('./routes/api.route'));
 
 app.use((req, res, next) => {

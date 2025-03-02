@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const CrourselSchema = new mongoose.Schema({
     title: { type: String, required: true },
     content: { type: String, required: true },
-    image: { type: String }, // Field to store the image URL or path
+    image: { type: String }, 
+    action: {type:String},// Field to store the image URL or path
     updatedAt: { type: Date, default: Date.now }
 });
 
