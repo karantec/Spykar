@@ -1,33 +1,23 @@
 const jwt = require('jsonwebtoken');
+const JWT_SECRET = process.env.JWT_SECRET || "belowisasecretkey";
+require('dotenv').config();  // ✅ Load environment variables
 
-// Use JWT secret from .env (fallback for development)
-const JWT_SECRET = process.env.JWT_SECRET || 'your_secret_key';
-
-
-
-
-
-// Middleware to verify the token sent by the client
 const verifyToken = (req, res, next) => {
-  // Expect the token in the Authorization header (e.g., "Bearer <token>")
-  const authHeader = req.header('Authorization');
+    const authHeader = req.header('Authorization');
+    if (!authHeader) {
+        return res.status(401).json({ message: 'Access denied, token missing' });
+    }
 
-  if (!authHeader) {
-    return res
-      .status(401)
-      .json({ message: 'Access denied, token missing' });
-  }
+    const token = authHeader.split(' ')[1]; // ✅ Ensure this extracts only the token part
 
-  // If using "Bearer <token>" format, split to get the token value
-  const token = authHeader.split(' ')[1] || authHeader;
-
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded; // Contains the userId field
-    next();
-  } catch (error) {
-    res.status(400).json({ message: 'Invalid token' });
-  }
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        req.user = { userId: decoded.userId };  // ✅ Extract userId from token
+        next();
+    } catch (error) {
+        console.error("JWT Verification Error:", error);
+        res.status(400).json({ message: 'Invalid token', error: error.message });
+    }
 };
 
 module.exports = { verifyToken };

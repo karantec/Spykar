@@ -6,8 +6,9 @@ const User = require("../models/User.model");
 const JWT_SECRET = process.env.JWT_SECRET || "belowisasecretkey";
 
 const generateToken = (userId) => {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: "1hr" });
+  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: "1h" });
 };
+
 
 const UserSignup = async (req, res) => {
   try {
