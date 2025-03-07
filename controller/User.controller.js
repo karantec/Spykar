@@ -10,6 +10,7 @@ const generateToken = (userId) => {
 };
 
 
+
 const UserSignup = async (req, res) => {
   try {
     const { name, email, password } = req.body;

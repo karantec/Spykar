@@ -72,5 +72,47 @@ const getBookingById=async(req,res)=>{
 }
 
 
+const updateBooking =async(req,res)=>{
+    try{
+         const {id}=req.params;
+         const{chef, bookingDate, status, notes } =req.body;
 
-module.exports={createBooking,getBookings,getBookingById};
+         const updatedBooking=await Booking.findByIdAndUpdate(id,{
+            chef,bookingDate,status,notes
+         },
+        {new:tru});
+
+        res.status(200).json({
+            message:"Booking updated Successfully",
+            data:updatedBooking
+        })
+
+    }
+    catch(error){
+        console.error("Error:",error);
+        res.status(500).json({
+            message: "Internal server error",
+          });
+    }
+}
+
+
+
+const deleteBooking = async (req, res) => {
+    try {
+      const bookings=await Booking.deleteMany();
+     
+  
+      res.status(200).json({
+        message: "Booking  deleted successfully",
+      data: bookings
+      });
+    } catch (error) {
+      console.error("Error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };
+
+module.exports={createBooking,getBookings,getBookingById,updateBooking ,
+    deleteBooking  
+};
