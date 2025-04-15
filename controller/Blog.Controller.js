@@ -10,6 +10,14 @@ const createBlog = async (req, res) => {
     if (!title || !content || !category || !image) {
       return res.status(400).json({ message: "Please fill in all fields" });
     }
+    // check   if the blog is already exists
+    const existingData=await Blog.findOne({title})
+
+    if(existingData){
+      return res.status(400).json({message:"This blog already exists"})
+    }
+
+    
     const newBlog = new Blog({
       title,
       content,

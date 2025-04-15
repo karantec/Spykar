@@ -1,8 +1,7 @@
 const { createChef, getAllChef, getById, updateChef, deleteCheftById, DeleteAllChef } = require('../controller/Chefs.Controller');
 
 const router = require('express').Router();
-
-router.post('/createChef',createChef  );
+router.post('/create',createChef  );
 router.get('/get',  getAllChef);
 router.get('/get/:id', getById);
 router.put('/update/:id',updateChef) ;
