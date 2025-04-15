@@ -56,19 +56,35 @@ const getAllServices = async (req, res) => {
 
 
 const deleteServices = async (req, res) => {
-    try {
-      const Services=await Service.deleteMany();
-     
-  
-      res.status(200).json({
-        message: "Services deleted successfully",
-      data: Services
-      });
-    } catch (error) {
-      console.error("Error:", error);
-      res.status(500).json({ message: "Internal server error" });
+  try {
+    const { id } = req.params;
+ 
+
+    // Validate if ID is a valid MongoDB ObjectId
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: "Invalid blog ID format" });
     }
-  };
+
+    // Check if the blog exists before deletion
+    const existingBlog = await Service.findById(id);
+    if (!existingBlog) {
+      return res.status(404).json({ message: "Blog not found" });
+    }
+
+    // Delete the blog
+    const deletedServices = await Service.findByIdAndDelete(id);
+
+    res.status(200).json({
+      message: "Service successfully deleted",
+      deletedServices ,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
 
 module.exports = {
     createServices,

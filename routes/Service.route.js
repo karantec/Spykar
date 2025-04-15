@@ -5,6 +5,6 @@ const router = require('express').Router();
 
 router.post('/createService',  createServices)
 router.get('/get',   getAllServices)
-router.delete('/delete',deleteServices)
+router.delete('/delete/:id',deleteServices)
 
 module.exports = router;
