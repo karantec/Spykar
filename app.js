@@ -9,6 +9,7 @@ const GalleryRoutes=require('./routes/Gallery.route');
 const CrouselRoutes=require('./routes/Crousel.route');
 const BookingRoutes=require('./routes/Booking.routes');
 const chefRoutes=require('./routes/Chef.route');
+const ServiceRoutes=require("./routes/Service.route");
 const morgan = require('morgan');
 const connectDB = require('./config/db');
 
@@ -32,6 +33,7 @@ app.use('/testimonial', TestimonialRoutes );
 app.use('/gallery',GalleryRoutes)
 app.use('/crousel', CrouselRoutes)
 app.use('/chef',chefRoutes);
+app.use("/ser",ServiceRoutes )
 app.use('/booking',BookingRoutes)
 app.use('/api', require('./routes/api.route'));
 
