@@ -1,5 +1,5 @@
 const { cloudinary } = require("../config/cloudinary");
-const Investor = require("../models/Blog.Model");
+const Investor = require("../models/Investor.Model");
 
 //create a new blog post with the provided data
 

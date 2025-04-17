@@ -3,7 +3,7 @@ const { createInvestor, getallInvestor, getInvestorById, updateInvestor, deleteI
 const router = require('express').Router();
 
 router.post('/createInvestor', createInvestor)
-router.get('/getAll', getallInvestor);
+router.get('/getinvestor', getallInvestor);
 router.get('/get/:id', getInvestorById);
 router.put('/update/:id',updateInvestor) ;
 router.delete('/delete/:id', deleteInvestor)
