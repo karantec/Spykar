@@ -11,6 +11,7 @@ const chefRoutes=require('./routes/Chef.route');
 const Connect=require('./routes/Connect.route')
 const ServiceRoutes=require("./routes/Service.route");
 const HomeRoutes=require('./routes/HomePage.route');
+const InvestorContactRoutes=require('./routes/InvestorContact.route');
 const Investor=require('./routes/Investor.route')
 const FoodRoutes=require('./routes/Food.route')
 
@@ -38,12 +39,14 @@ app.use('/testimonial', TestimonialRoutes );
 app.use('/gallery',GalleryRoutes)
 app.use('/crousel', CrouselRoutes)
 app.use('/chef',chefRoutes);
+app.use('/InvestorContactRoutes',InvestorContactRoutes)
 app.use("/ser",ServiceRoutes )
 app.use('/home',HomeRoutes )
 app.use('/investor',Investor)
 app.use('/booking',BookingRoutes)
 app.use('/connect',Connect)
 app.use('/food',FoodRoutes);
+
 app.use('/api', require('./routes/api.route'));
 
 app.use((req, res, next) => {
