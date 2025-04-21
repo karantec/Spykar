@@ -3,22 +3,22 @@ const { cloudinary } = require("../config/cloudinary");
 const InvestorContact=require("../models/InvestorContact.Model")
 //create a new blog post with the provided data
 
-const createInvestorContact = async (req, res) => {
+const createInvestContact = async (req, res) => {
     try {
-      const { FullName, Email, City, Message } = req.body;
+      const { fullname,email,city,message } = req.body;
   
       // Check if contact already exists using Email
-      const existingData = await InvestorContact.findOne({ Email });
+      const existingData = await InvestorContact.findOne({ email });
   
       if (existingData) {
         return res.status(400).json({ message: "This InvestorContact already exists" });
       }
   
       const newInvestor = new InvestorContact({
-        FullName,
-        Email,
-        City,
-        Message,
+        fullname,
+        email,
+        city,
+        message,
       });
   
       await newInvestor.save();
@@ -38,7 +38,7 @@ const createInvestorContact = async (req, res) => {
 
 const getallInvestorContact = async (req, res) => {
   try {
-    const Investors = await InvestorContactModel.find();
+    const Investors = await InvestorContact.find();
 
     if (!Investors.length) {
       return res.status(404).json({ message: "No Investor posts found" });
@@ -58,10 +58,7 @@ const getallInvestorContact = async (req, res) => {
 
 
 module.exports={
-    createInvestorContact,
+    createInvestContact,
     getallInvestorContact
-    // getallInvestor,
-    // getInvestorById,
-    // updateInvestor,
-    // deleteInvestor
+   
 };

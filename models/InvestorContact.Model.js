@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 
 const InvestorContact= new mongoose.Schema({
     
-    FullName: { type: String, required: true },
-    Email: { type: String },
-    City: { type: String, required: true },
-    Message: { type: String },
+   fullname: { type: String, required: true },
+    email: { type: String },
+    city: { type: String, required: true },
+    message: { type: String },
     updatedAt: { type: Date, default: Date.now }
 });
 

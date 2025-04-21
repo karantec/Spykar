@@ -1,8 +1,8 @@
-const { createInvestorContact, getallInvestorContact } = require('../controller/InvestorContact.Controller');
+const { getallInvestorContact, createInvestContact } = require('../controller/InvestorContact.Controller');
 
 const router = require('express').Router();
 
-router.post('/create', createInvestorContact)
+router.post('/create', createInvestContact)
 router.get('/getinvestorContact', getallInvestorContact);
 
 

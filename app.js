@@ -15,6 +15,7 @@ const InvestorContactRoutes=require('./routes/InvestorContact.route');
 const Investor=require('./routes/Investor.route')
 const FoodRoutes=require('./routes/Food.route')
 
+const FoodGallRoutes=require('./routes/FoodGall.route')
 const morgan = require('morgan');
 
 const connectDB = require('./config/db');
@@ -45,7 +46,9 @@ app.use('/home',HomeRoutes )
 app.use('/investor',Investor)
 app.use('/booking',BookingRoutes)
 app.use('/connect',Connect)
+app.use('/foodGall',FoodGallRoutes)
 app.use('/food',FoodRoutes);
+app.use('/investContact',InvestorContactRoutes);
 
 app.use('/api', require('./routes/api.route'));
 
