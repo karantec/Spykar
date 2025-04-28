@@ -1,62 +1,128 @@
 const { cloudinary } = require("../config/cloudinary");
 const Gallery = require("../models/Gallery.Model");
 
+// Create gallery
 const createGallery = async (req, res) => {
   try {
-    const { name, content, galleryImages } = req.body;
+    const { media } = req.body;
 
-    // validation process
-    if (!name || !content || !galleryImages) {
+    if (!media || typeof media !== "string") {
       return res.status(400).json({
-        message: "All fields are required",
+        message: "Media URL is required and must be a string",
       });
     }
 
-    const newGallery = new Gallery({
-      name,
-      content,
-      galleryImages,
-    });
+    const newGallery = new Gallery({ media });
+
     await newGallery.save();
-    res
-      .status(201)
-      .json({ message: "Gallery created successfully", gallery: newGallery });
-  } catch (error) {
-    console.error("Ersror:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
-
-//ge all gallery
-const getAllGallery = async (req, res) => {
-  try {
-    const Gallerys = await Gallery.find();
-
-    res.status(200).json(Gallerys);
+    res.status(201).json({
+      message: "Gallery created successfully",
+      gallery: newGallery,
+    });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
+// Get all galleries
+const getAllGallery = async (req, res) => {
+  try {
+    const galleries = await Gallery.find();
 
-const deleteGallery = async (req, res) => {
-    try {
-      const Gallerys=await Gallery.deleteMany();
-     
-  
-      res.status(200).json({
-        message: "Gallery deleted successfully",
-      data: Gallerys
-      });
-    } catch (error) {
-      console.error("Error:", error);
-      res.status(500).json({ message: "Internal server error" });
+    if (!galleries || galleries.length === 0) {
+      return res.status(404).json({ message: "No galleries found" });
     }
-  };
+
+    res.status(200).json({
+      message: "Galleries retrieved successfully",
+      data: galleries,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Delete all galleries
+const deleteGallery = async (req, res) => {
+  try {
+    const result = await Gallery.deleteMany();
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: "No galleries found to delete" });
+    }
+
+    res.status(200).json({
+      message: "All galleries deleted successfully",
+      data: result,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Delete a single gallery
+const deleteSingleGallery = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const gallery = await Gallery.findByIdAndDelete(id);
+
+    if (!gallery) {
+      return res.status(404).json({ message: "Gallery not found" });
+    }
+
+    res.status(200).json({
+      message: "Gallery deleted successfully",
+      data: gallery,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Update gallery (media URL)
+const updateGallery = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { media } = req.body;
+
+    if (!media || typeof media !== "string") {
+      return res.status(400).json({
+        message: "Media URL is required and must be a string",
+      });
+    }
+
+    const updatedGallery = await Gallery.findByIdAndUpdate(
+      id,
+      {
+        media,
+        updatedAt: Date.now(),
+      },
+      { new: true }
+    );
+
+    if (!updatedGallery) {
+      return res.status(404).json({ message: "Gallery not found" });
+    }
+
+    res.status(200).json({
+      message: "Gallery updated successfully",
+      data: updatedGallery,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 module.exports = {
   createGallery,
   getAllGallery,
-  deleteGallery
+  deleteGallery,
+  deleteSingleGallery,
+  updateGallery,
 };

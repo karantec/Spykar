@@ -1,118 +1,134 @@
-const Booking=require('../models/Booking.Model');
+const Booking = require("../models/Booking.Model");
 
-
-// create bOoking 
-
+// Create a Booking
 const createBooking = async (req, res) => {
-    try {
-        // Ensure the user is authenticated
-        if (!req.user || !req.user.userId) {
-            return res.status(403).json({ message: "Unauthorized: Invalid token" });
-        }
+  try {
+    const {
+      fullName,
+      phoneNumber,
+      service,
+      preferredDate,
+      preferredTime,
+      specialRequests,
+    } = req.body;
 
-        const { chef, bookingDate, status, notes } = req.body;
+    const newBooking = new Booking({
+      fullName,
+      phoneNumber,
+      service,
+      preferredDate,
+      preferredTime,
+      specialRequests,
+    });
 
-        // Create a new booking
-        const newBooking = new Booking({
-            user: req.user.userId,  // Use authenticated user's ID
-            chef,
-            bookingDate,
-            status,
-            notes
-        });
+    await newBooking.save();
 
-        await newBooking.save();
-
-        res.status(201).json({
-            message: "Booking created successfully",
-            booking: newBooking
-        });
-
-    } catch (error) {
-        console.error("❌ Booking Error:", error);
-        res.status(500).json({ message: "Internal server error", error: error.message });
-    }
+    res.status(201).json({
+      message: "Booking created successfully",
+      booking: newBooking,
+    });
+  } catch (error) {
+    console.error("❌ Booking Creation Error:", error);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
+  }
 };
 
+// Get All Bookings
+const getBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find();
 
-const getBookings = async(req,res)=>{
-     try{
-        const Bookings=await Booking.find();
+    res.status(200).json({
+      message: "Bookings fetched successfully",
+      data: bookings,
+    });
+  } catch (error) {
+    console.error("❌ Fetch Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
-        res.status(200).json({
-            message:"Booking fetched successfully",
-            data:Bookings
-        })
-     }
-     catch(error){
-         console.error(error);
-         res.status(500).json({message:"Internal server error"});
-     }
-}
+// Get Single Booking by ID
+const getBookingById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const booking = await Booking.findById(id);
 
-// we need a single booking
-const getBookingById=async(req,res)=>{
-     try{
-        
-        const {id}=req.params;
-         const Bookings=await Booking.findById(id);
-         if(!Booking){
-            return res.status(404).json({message:"Booking not found"});
-         }
-
-         res.status(200).json({
-            message:"Booking fetched successfully",
-            data:Bookings
-         })
-     }
-     catch(error){
-        console.error("Error:",error);
-         res.status(500).json({message:"Internal server error"});
-     }
-}
-
-
-const updateBooking =async(req,res)=>{
-    try{
-         const {id}=req.params;
-         const{chef, bookingDate, status, notes } =req.body;
-
-         const updatedBooking=await Booking.findByIdAndUpdate(id,{
-            chef,bookingDate,status,notes
-         },
-        {new:tru});
-
-        res.status(200).json({
-            message:"Booking updated Successfully",
-            data:updatedBooking
-        })
-
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
     }
-    catch(error){
-        console.error("Error:",error);
-        res.status(500).json({
-            message: "Internal server error",
-          });
+
+    res.status(200).json({
+      message: "Booking fetched successfully",
+      data: booking,
+    });
+  } catch (error) {
+    console.error("❌ Fetch Single Booking Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Update a Booking
+const updateBooking = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      fullName,
+      phoneNumber,
+      service,
+      preferredDate,
+      preferredTime,
+      specialRequests,
+    } = req.body;
+
+    const updatedBooking = await Booking.findByIdAndUpdate(
+      id,
+      {
+        fullName,
+        phoneNumber,
+        service,
+        preferredDate,
+        preferredTime,
+        specialRequests,
+      },
+      { new: true }
+    );
+
+    if (!updatedBooking) {
+      return res.status(404).json({ message: "Booking not found" });
     }
-}
 
+    res.status(200).json({
+      message: "Booking updated successfully",
+      data: updatedBooking,
+    });
+  } catch (error) {
+    console.error("❌ Update Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
-
+// Delete All Bookings
 const deleteBooking = async (req, res) => {
-    try {
-      const bookings=await Booking.deleteMany();
-     
-  
-      res.status(200).json({
-        message: "Booking  deleted successfully",
-      data: bookings
-      });
-    } catch (error) {
-      console.error("Error:", error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  };
+  try {
+    const bookings = await Booking.deleteMany();
 
-module.exports={createBooking,getBookings,getBookingById,updateBooking ,
-    deleteBooking  
+    res.status(200).json({
+      message: "All bookings deleted successfully",
+      data: bookings,
+    });
+  } catch (error) {
+    console.error("❌ Delete Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+module.exports = {
+  createBooking,
+  getBookings,
+  getBookingById,
+  updateBooking,
+  deleteBooking,
 };

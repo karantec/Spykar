@@ -1,8 +1,11 @@
-const { createContact, getallContact } = require('../controller/Contact.controller');
+const {
+  createContactForm,
+  getAllContactForms,
+} = require("../controller/Contact.controller");
 
-const router = require('express').Router();
+const router = require("express").Router();
 
-router.post('/createContact',createContact  );
-router.get('/get',  getallContact);
+router.post("/createContact", createContactForm);
+router.get("/get", getAllContactForms);
 
 module.exports = router;

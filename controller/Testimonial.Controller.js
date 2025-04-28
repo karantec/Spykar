@@ -1,20 +1,19 @@
 const { cloudinary } = require("../config/cloudinary");
 const Testimonial = require("../models/Testimonial.Model");
 
-/// create a testimonial
-const createTestimonial = async (req, res) => {
+// Create a testimonial
+const create = async (req, res) => {
   try {
-    const { name, content, profileimage } = req.body;
+    const { image } = req.body; // image should be passed as a URL or path
 
-    if (!name || !content) {
-      return res.status(400).json({ message: "Please fill in all fields" });
+    if (!image) {
+      return res.status(400).json({ message: "Please provide an image" });
     }
 
     const newTestimonial = new Testimonial({
-      name,
-      content,
-      profileimage,
+      image,
     });
+
     await newTestimonial.save();
 
     res.status(201).json({
@@ -27,116 +26,108 @@ const createTestimonial = async (req, res) => {
   }
 };
 
+// Get all testimonials
+const getAllTestimonial = async (req, res) => {
+  try {
+    const testimonials = await Testimonial.find();
 
-//get all Testominail
-
-const getAllTestimonial=async(req,res)=>{
-     try{
-         const Testimonials= await  Testimonial.find();
-         
-         if(!Testimonials.length){
-             return res.status(404).json({message:"No Testimonial found"});
-         }
-          res.status(200).json({
-             message:"Testimonial fetched successfully",
-             data:Testimonials
-          })
-     }
-     catch(error){
-        console.error("Error:", error);
-        res.status(500).json({ message: "Internal server error" });
-     }
-}
-
-//get a single testimonial
- const getTestimonialByID=async(req,res)=>{
-     try{
-          const {id}=req.params;
-
-          const Testimonials=await Testimonial.findById(id);
-
-          if(!Testimonials){
-            return res.status(404).json({message:"No Testimonial found"});
-          }
-          res.status(200).json({
-             message:"Testimonial Fetched Successfully",
-             data:Testimonials})
-     }catch(error){
-         console.error("Error:",error);
-           res.status(500).json({message:"Internal server"})
-     }
- }
-
-//update testimonial
-const updateTestimonial=async(req,res)=>{
-     try{
-         const {id}=req.params;
-
-          const { name, content, profileimage}=req.body;
-          
-          let imageUrl="";
-
-           if(profileimage){
-             const result=await cloudinary.uploader.upload(profileimage,{
-               folder:"testimonials",
-             });
-             imageUrl=result.secure_url;
-           }
-            const updateTestimonial=await Testimonial.findByIdAndUpdate(id,{
-                 name, 
-                 content,
-                 profileimage:imageUrl
-            },{new:true},)
-            
-
-            if(!updateTestimonial){
-               return res.status(404).json({message:"Testimonial not found"});
-            }
-             res.status(200).json({
-                message:"Testimonial updated successfully",
-                data:updateTestimonial
-             });
-
-     }
-     catch(error){
-        console.error("Error:", error);
-        res.status(500).json({ message: "Internal server error" });
-     }
-}
-
-
-const deleteTestomonial=async(req,res)=>{
-    try{
-        const {id}=req.params;
-        if (!id.match(/^[0-9a-fA-F]{24}$/)) {
-            return res.status(400).json({ message: "Invalid blog ID format" });
-          }
-         
-          const existingTestimonial=await Testimonial.findById(id); 
-          if(!existingTestimonial){
-            return res.status(404).json({message:"Testimonial not found"});
-          }
-           // delete the testimonial
-            const deleteTestimonial=await Testimonial.findByIdAndDelete(id);
-
-            res.status(200).json({
-                message:"Testimonial Deleted Successfully",
-                data:deleteTestimonial
-            });
-
+    if (!testimonials.length) {
+      return res.status(404).json({ message: "No testimonials found" });
     }
-    catch(error){
-       console.error("Error:", error);
-       res.status(500).json({ message: "Internal server error" });
+
+    res.status(200).json({
+      message: "Testimonials fetched successfully",
+      data: testimonials,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Get a single testimonial by ID
+const getTestimonialByID = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const testimonial = await Testimonial.findById(id);
+
+    if (!testimonial) {
+      return res.status(404).json({ message: "No testimonial found" });
     }
-}
 
+    res.status(200).json({
+      message: "Testimonial fetched successfully",
+      data: testimonial,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
-module.exports={
-    createTestimonial,
-    getAllTestimonial,
-    getTestimonialByID,
-    updateTestimonial,
-    deleteTestomonial
-    
+// Update testimonial
+const updateTestimonial = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { image } = req.body;
+
+    if (!image) {
+      return res.status(400).json({ message: "Please provide an image" });
+    }
+
+    const updatedTestimonial = await Testimonial.findByIdAndUpdate(
+      id,
+      { image },
+      { new: true }
+    );
+
+    if (!updatedTestimonial) {
+      return res.status(404).json({ message: "Testimonial not found" });
+    }
+
+    res.status(200).json({
+      message: "Testimonial updated successfully",
+      data: updatedTestimonial,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Delete testimonial
+const deleteTestimonial = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate the ID format
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: "Invalid testimonial ID format" });
+    }
+
+    const existingTestimonial = await Testimonial.findById(id);
+    if (!existingTestimonial) {
+      return res.status(404).json({ message: "Testimonial not found" });
+    }
+
+    // Delete the testimonial
+    const deletedTestimonial = await Testimonial.findByIdAndDelete(id);
+
+    res.status(200).json({
+      message: "Testimonial deleted successfully",
+      data: deletedTestimonial,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+module.exports = {
+  create,
+  getAllTestimonial,
+  getTestimonialByID,
+  updateTestimonial,
+  deleteTestimonial,
 };

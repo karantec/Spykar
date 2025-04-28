@@ -1,62 +1,90 @@
+const ContactForm = require("../models/Contact.Models");
 
-const Contact = require("../models/Contact.Models");
-
-//create a new blog post with the provided data
-
-const createContact = async (req, res) => {
+// Create a new contact form submission
+const createContactForm = async (req, res) => {
   try {
-    const { name, phone, email, city ,area} = req.body;
-    /// validation process
-    if (!name || !phone || !email || !city || !area) {
-      return res.status(400).json({ message: "Please fill in all fields" });
-    }
-    // check   if the blog is already exists
-    const existingData=await Contact.findOne({name})
+    const { fullName, email, subject, message } = req.body;
 
-    if(existingData){
-      return res.status(400).json({message:"This Contact already exists"})
+    // Validation process
+    if (!fullName || !email || !subject || !message) {
+      return res.status(400).json({
+        success: false,
+        message: "Please fill in all required fields",
+      });
     }
 
-    
-    const newContact = new Blog({
-        name, phone, email, city ,area
+    // Check if the same email has submitted recently (optional)
+    const existingSubmission = await ContactForm.findOne({
+      email,
+      createdAt: { $gt: new Date(Date.now() - 24 * 60 * 60 * 1000) }, // Within 24 hours
     });
-    await newContact.save();
+
+    if (existingSubmission) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "You have already submitted a contact form recently. Please wait 24 hours before submitting again.",
+      });
+    }
+
+    // Create new contact form submission
+    const newContactForm = new ContactForm({
+      fullName,
+      email,
+      subject,
+      message,
+    });
+
+    await newContactForm.save();
 
     res.status(201).json({
-      message: "Contact is successfully created",
-      
+      success: true,
+      message: "Your message has been successfully submitted",
+      data: newContactForm,
     });
   } catch (error) {
-    console.error("Error:", error);
+    console.error("Error in createContactForm:", error);
     res.status(500).json({
-      message: "Internal server error",
+      success: false,
+      message:
+        error.name === "ValidationError"
+          ? error.message
+          : "Internal server error",
+      error: error.message,
     });
   }
 };
 
-// get all blog posts
-const getallContact = async (req, res) => {
+// Get all contact form submissions
+const getAllContactForms = async (req, res) => {
   try {
-    const Contacts = await Contact.find();
+    const contactForms = await ContactForm.find()
+      .sort({ createdAt: -1 })
+      .select("-__v"); // Excluding version key
 
-    if (!Contacts .length) {
-      return res.status(404).json({ message: "No Contact posts found" });
+    if (!contactForms.length) {
+      return res.status(404).json({
+        success: false,
+        message: "No contact form submissions found",
+      });
     }
-    
-    res.status(200).json(Contacts); // Corrected from "blog" to "blogs"
+
+    res.status(200).json({
+      success: true,
+      count: contactForms.length,
+      data: contactForms,
+    });
   } catch (error) {
-    console.error("Error:", error);
+    console.error("Error in getAllContactForms:", error);
     res.status(500).json({
+      success: false,
       message: "Internal server error",
+      error: error.message,
     });
   }
 };
 
-
-
-module.exports={
-    createContact,
-    getallContact,
-   
+module.exports = {
+  createContactForm,
+  getAllContactForms,
 };

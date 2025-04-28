@@ -1,37 +1,29 @@
-
 const Service = require("../models/Services.Model");
 
-const createServices = async (req, res) => {
+// Create a Service
+const createService = async (req, res) => {
   try {
-    const {servicename,description ,image} = req.body;
+    const { title, price, description, image } = req.body;
 
-
-    //check for the duplicated
-     const existingServices= await Service.findOne({ servicename });
-
-
-      if(existingServices){
-        return res.status(400).json({
-          message: "Service already exists",
-        });
-      }
-    // validation process
-    
-    
-    
-    
-    
-    if (!servicename || !description) {
-      return res.status(400).json({
-        message: "All fields are required",
-      });
+    // Validation
+    if (!title || !price || !description || !image) {
+      return res.status(400).json({ message: "All fields are required" });
     }
 
+    // Check for duplicate
+    const existingService = await Service.findOne({ title });
+    if (existingService) {
+      return res.status(400).json({ message: "Service already exists" });
+    }
+
+    // Create new service
     const newService = new Service({
-      servicename,
+      title,
+      price,
       description,
-      image
+      image,
     });
+
     await newService.save();
     res
       .status(201)
@@ -42,53 +34,97 @@ const createServices = async (req, res) => {
   }
 };
 
-//ge all gallery
+// Get all Services
 const getAllServices = async (req, res) => {
   try {
-    const Services = await Service.find();
-
-    res.status(200).json(Services);
+    const services = await Service.find().sort({ updatedAt: -1 });
+    res.status(200).json(services);
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
-
-const deleteServices = async (req, res) => {
+// Get a single Service by ID
+const getServiceById = async (req, res) => {
   try {
     const { id } = req.params;
- 
 
-    // Validate if ID is a valid MongoDB ObjectId
     if (!id.match(/^[0-9a-fA-F]{24}$/)) {
-      return res.status(400).json({ message: "Invalid blog ID format" });
+      return res.status(400).json({ message: "Invalid Service ID format" });
     }
 
-    // Check if the blog exists before deletion
-    const existingBlog = await Service.findById(id);
-    if (!existingBlog) {
-      return res.status(404).json({ message: "Blog not found" });
+    const service = await Service.findById(id);
+
+    if (!service) {
+      return res.status(404).json({ message: "Service not found" });
     }
 
-    // Delete the blog
-    const deletedServices = await Service.findByIdAndDelete(id);
-
-    res.status(200).json({
-      message: "Service successfully deleted",
-      deletedServices ,
-    });
+    res.status(200).json(service);
   } catch (error) {
     console.error("Error:", error);
-    res.status(500).json({
-      message: "Internal server error",
-    });
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Update a Service
+const updateService = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, price, description, image } = req.body;
+
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: "Invalid Service ID format" });
+    }
+
+    const service = await Service.findById(id);
+
+    if (!service) {
+      return res.status(404).json({ message: "Service not found" });
+    }
+
+    service.title = title || service.title;
+    service.price = price || service.price;
+    service.description = description || service.description;
+    service.image = image || service.image;
+    service.updatedAt = Date.now();
+
+    await service.save();
+
+    res.status(200).json({ message: "Service updated successfully", service });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Delete a Service
+const deleteService = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: "Invalid Service ID format" });
+    }
+
+    const service = await Service.findById(id);
+    if (!service) {
+      return res.status(404).json({ message: "Service not found" });
+    }
+
+    await Service.findByIdAndDelete(id);
+
+    res.status(200).json({ message: "Service deleted successfully" });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
 module.exports = {
-    createServices,
-    getAllServices,
-    deleteServices
-
+  createService,
+  getAllServices,
+  getServiceById,
+  updateService,
+  deleteService,
 };

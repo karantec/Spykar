@@ -1,10 +1,25 @@
-const { createTestimonial, getAllTestimonial, getTestimonialByID, updateTestimonial, deleteTestomonial } = require('../controller/Testimonial.Controller');
+const express = require("express");
+const router = express.Router();
+const {
+  create,
+  getAllTestimonial,
+  getTestimonialByID,
+  updateTestimonial,
+  deleteTestimonial,
+} = require("../controller/Testimonial.Controller");
+// Route to create a testimonial
+router.post("/create", create);
 
-const router = require('express').Router();
+// Route to get all testimonials
+router.get("/", getAllTestimonial);
 
-router.post('/createTestimonial',  createTestimonial)
-router.get('/get',   getAllTestimonial)
-router.get('/get/:id', getTestimonialByID);
-router.put('/update/:id',updateTestimonial) ;
-router.delete('/delete/:id',deleteTestomonial)
+// Route to get a single testimonial by ID
+router.get("/:id", getTestimonialByID);
+
+// Route to update a testimonial by ID
+router.put("/:id", updateTestimonial);
+
+// Route to delete a testimonial by ID
+router.delete("/:id", deleteTestimonial);
+
 module.exports = router;

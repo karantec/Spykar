@@ -1,19 +1,13 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const BookingSchema=new mongoose.Schema({
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    chef: { type: mongoose.Schema.Types.ObjectId, ref: 'Chef', required: true },
-    bookingDate: { type: Date, required: true },
-    
-    status: { 
-        type: String, 
-        enum: ['booked', 'non-booked'], // Updated status options
-        default: 'non-booked' // Default to "non-booked"
-    },
-    notes: { type: String },
-    createdAt: { type: Date, default: Date.now }
+const BookingSchema = new mongoose.Schema({
+  fullName: { type: String, required: true }, // Full Name
+  phoneNumber: { type: String, required: true }, // Phone Number
+  service: { type: String, required: true }, // Selected Service
+  preferredDate: { type: Date, required: true }, // Preferred Date
+  preferredTime: { type: String, required: true }, // Preferred Time (string because time slots are usually strings like "10:00 AM", "2:30 PM")
+  specialRequests: { type: String }, // Special Requests (optional)
+  createdAt: { type: Date, default: Date.now }, // Auto-timestamp
+});
 
-
-})
-
-module.exports=mongoose.model('Booking',BookingSchema);
+module.exports = mongoose.model("Booking", BookingSchema);
