@@ -1,11 +1,10 @@
 const mongoose = require("mongoose");
 
 const GallerySchema = new mongoose.Schema({
-  media: { type: String }, // Array of URLs (can be either images or videos)
+  media: { type: [String], required: true }, // Corrected to an array of strings
   updatedAt: { type: Date, default: Date.now },
 });
 
-// Middleware to update the updatedAt field before saving
 GallerySchema.pre("save", function (next) {
   this.updatedAt = Date.now();
   next();

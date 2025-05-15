@@ -6,15 +6,19 @@ const createGallery = async (req, res) => {
   try {
     const { media } = req.body;
 
-    if (!media || typeof media !== "string") {
+    if (
+      !Array.isArray(media) ||
+      media.length === 0 ||
+      !media.every((url) => typeof url === "string")
+    ) {
       return res.status(400).json({
-        message: "Media URL is required and must be a string",
+        message: "Media must be a non-empty array of strings (URLs)",
       });
     }
 
     const newGallery = new Gallery({ media });
-
     await newGallery.save();
+
     res.status(201).json({
       message: "Gallery created successfully",
       gallery: newGallery,
@@ -84,15 +88,19 @@ const deleteSingleGallery = async (req, res) => {
   }
 };
 
-// Update gallery (media URL)
+// Update gallery (media array)
 const updateGallery = async (req, res) => {
   try {
     const { id } = req.params;
     const { media } = req.body;
 
-    if (!media || typeof media !== "string") {
+    if (
+      !Array.isArray(media) ||
+      media.length === 0 ||
+      !media.every((url) => typeof url === "string")
+    ) {
       return res.status(400).json({
-        message: "Media URL is required and must be a string",
+        message: "Media must be a non-empty array of strings (URLs)",
       });
     }
 
